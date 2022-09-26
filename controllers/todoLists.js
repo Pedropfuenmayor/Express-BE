@@ -1,5 +1,23 @@
 const { isEmpty } = require('validator')
 
+exports.createTodolists = async (req, res, next) => {
+    const { name } = req.body
+
+    let todolist
+
+    try {
+        todolist = await req.prisma.todolists.create({
+            data: {
+                name,
+            },
+        })
+        res.status(201).json(todolist)
+    } catch (error) {
+        error.statusCode = 400
+        next(error)
+    }
+}
+
 exports.getTodoLists = async (req, res) => {
     let errors = { fields: [] }
     try {
@@ -24,7 +42,7 @@ exports.getTodoListById = async (req, res) => {
                 id,
             },
         })
-         //validate todo list exist
+        //validate todo list exist
         if (!todolist) {
             errors.fields.push({ field: 'id', value: id })
 
@@ -63,7 +81,7 @@ exports.postTodoList = async (req, res) => {
             data: {
                 name,
                 userid,
-                id
+                id,
             },
         })
         return res.status(201).json(todolist)
@@ -121,37 +139,36 @@ exports.putTodoList = async (req, res) => {
 }
 
 exports.deleteTodoList = async (req, res) => {
-  const id = +req.params.id
+    const id = +req.params.id
 
-  let errors = { fields: [] }
+    let errors = { fields: [] }
 
-  try {
-      //fetch todo list
-      const todolist = await req.prisma.todolists.findUnique({
-          where: {
-              id,
-          },
-      })
-       //validate todo list exist
-      if (!todolist) {
-          errors.fields.push({ field: 'id', value: id })
+    try {
+        //fetch todo list
+        const todolist = await req.prisma.todolists.findUnique({
+            where: {
+                id,
+            },
+        })
+        //validate todo list exist
+        if (!todolist) {
+            errors.fields.push({ field: 'id', value: id })
 
-          let error = new Error()
+            let error = new Error()
 
-          error.statusCode = 404
+            error.statusCode = 404
 
-          throw error
-      }
-      await req.prisma.todolists.delete({
-        where: {
-            id,
-        },
-    })
+            throw error
+        }
+        await req.prisma.todolists.delete({
+            where: {
+                id,
+            },
+        })
 
-      return res.status(204).json()
-
-  } catch (error) {
-      console.log(error)
-      res.status(error.statusCode || 500).json(errors)
-  }
+        return res.status(204).json()
+    } catch (error) {
+        console.log(error)
+        res.status(error.statusCode || 500).json(errors)
+    }
 }
