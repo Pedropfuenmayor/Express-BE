@@ -1,0 +1,34 @@
+{
+  "name": "todo-be-pedro-fuenmayor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "mocha --timeout 5000",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/udemy-course-nodejs-complete"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "4.3.1",
+    "cors": "^2.8.5",
+    "express": "^4.16.3",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.0.0",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1",
+    "prisma": "4.3.1"
+  }
+}
