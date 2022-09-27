@@ -1,4 +1,4 @@
-const app = require('./app')
+import app from './app'
 
 app.listen(8000, () => {
   console.log('App running on port 8000.');
