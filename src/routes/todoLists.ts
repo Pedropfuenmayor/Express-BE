@@ -1,21 +1,15 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {
-    getTodoLists,
-    postTodoList,
-    getTodoListById,
-    putTodoList,
-    deleteTodoList,
-} = require('../controllers/todoLists');
-import { body, validationResult } from 'express-validator';
+import { getTodoLists, getTodoListById, postTodoList, putTodoList} from '../controllers/todoLists';
+import { validateTodolistBody } from '../controllers/validation';
 
-// router.get('/todolists', getTodoLists)
+router.get('/todolists', getTodoLists);
 
-// router.get('/todolists/:id', getTodoListById)
+router.get('/todolists/:id', getTodoListById);
 
-router.post('/todolists', body('name').not().isEmpty().trim().withMessage('Todo list must have a name'), postTodoList);
+router.post('/todolists', validateTodolistBody, postTodoList);
 
-// router.put('/todolists/:id', putTodoList)
+router.put('/todolists/:id',validateTodolistBody ,putTodoList)
 
 // router.delete('/todolists/:id', deleteTodoList)
 

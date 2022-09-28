@@ -1,136 +1,112 @@
-import { NextFunction, Request, Response, ErrorRequestHandler} from 'express';
-import { body, validationResult } from 'express-validator';
+import { NextFunction, Request, Response } from 'express';
 import { Todolist } from '../models';
 
 export const postTodoList = async (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-
     try {
-            if (!errors.isEmpty()) {
-                const error = new Error("Todolist errors");
-                error.errors = errors.array()
-                error.statusCode = 422;
-                throw error;
-              }
-            
+        if (req.errorFields.length > 0) {
+            const error = new Error();
+            error.fields = req.errorFields;
+            error.statusCode = 400;
+            throw error;
+        }
         const { name }: Todolist = req.body;
         //create todo list
         const todolist = await req.prisma.todolists.create({
             data: {
-                name
+                name,
             },
         });
         return res.status(201).json(todolist);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
-// exports.createTodolists = async (req: Request, res: Response, next: NextFunction) => {
-//     const { name } = req.body;
+export const getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        //fetch todo lists
+        const todolist = await req.prisma.todolists.findMany();
+        return res.status(200).json(todolist);
+    } catch (error) {
+        next(error);
+    }
+};
 
-//     let todolist;
+export const getTodoListById = async (req: Request, res: Response, next: NextFunction) => {
+    const id = +req.params.id;
 
-//     try {
-//         todolist = await req.prisma.todolists.create({
-//             data: {
-//                 name,
-//             },
-//         });
-//         res.status(201).json(todolist);
-//     } catch (error) {
-//         error.statusCode = 400;
-//         next(error);
-//     }
-// };
+    try {
+        //fetch todo list
+        const todolist = await req.prisma.todolists.findUnique({
+            where: {
+                id,
+            },
+        });
+        //validate todo list exist
+        if (!todolist) {
+            const validationError = [{ message: 'Todo list not found', field: 'id', value: id }];
 
-// exports.getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
-//     let errors = { fields: [] };
-//     try {
-//         //fetch todo lists
-//         const todolist = await req.prisma.todolists.findMany();
-//         return res.status(200).json(todolist);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json(errors);
-//     }
-// };
+            let error = new Error();
 
-// exports.getTodoListById = async (req: Request, res: Response, next: NextFunction) => {
-//     const id = +req.params.id;
+            error.fields = validationError;
 
-//     let errors = { fields: [] };
+            error.statusCode = 404;
 
-//     try {
-//         //fetch todo list
-//         const todolist = await req.prisma.todolists.findUnique({
-//             where: {
-//                 id,
-//             },
-//         });
-//         //validate todo list exist
-//         if (!todolist) {
-//             errors.fields.push({ field: 'id', value: id });
+            throw error;
+        }
+        return res.status(200).json(todolist);
+    } catch (error) {
+        next(error);
+    }
+};
 
-//             let error = new Error();
+export const putTodoList = async (req: Request, res: Response, next: NextFunction) => {
+    const id = +req.params.id;
 
-//             error.statusCode = 404;
+    const { name } = req.body;
 
-//             throw error;
-//         }
-//         return res.status(200).json(todolist);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(error.statusCode || 500).json(errors);
-//     }
-// };
 
-// exports.putTodoList = async (req: Request, res: Response, next: NextFunction) => {
-//     const id = +req.params.id;
+    try {
+        // validate todo list name is not empty
+        if (req.errorFields.length > 0) {
+            const error = new Error();
+            error.fields = req.errorFields;
+            error.statusCode = 400;
+            throw error;
+        }
 
-//     const { name } = req.body;
+        //fetch todo list
+        const todolist = await req.prisma.todolists.findUnique({
+            where: {
+                id,
+            },
+        });
 
-//     let errors = { fields: [] };
+        //validate todo list exist
+        if (!todolist) {
+            const validationError = [{ message: 'Todo list not found', field: 'id', value: id }];
 
-//     try {
-//         // validate todo list name is not empty
-//         if (isEmpty(name.trim())) {
-//             errors.fields.push({ field: 'name', value: name });
-//         }
+            let error = new Error();
 
-//         //fetch todo list
-//         const todolist = await req.prisma.todolists.findUnique({
-//             where: {
-//                 id,
-//             },
-//         });
+            error.fields = validationError;
 
-//         //validate todo list exist
-//         if (!todolist) {
-//             errors.fields.push({ field: 'id', value: id });
-//         }
+            error.statusCode = 404;
 
-//         if (errors.fields.length) {
-//             let error = new Error();
+            throw error;
+        }
 
-//             error.statusCode = 400;
-
-//             throw error;
-//         }
-
-//         //update todo list
-//         const updatedtodolist = await req.prisma.todolists.update({
-//             where: { id },
-//             data: {
-//                 name,
-//             },
-//         });
-//         return res.status(201).json(updatedtodolist);
-//     } catch (error) {
-//         console.log(error);
-//         res.status(error.statusCode || 500).json(errors);
-//     }
-// };
+        //update todo list
+        const updatedtodolist = await req.prisma.todolists.update({
+            where: { id },
+            data: {
+                name,
+            },
+        });
+        return res.status(200).json(updatedtodolist);
+    } catch (error) {
+        next(error);
+    }
+};
 
 // exports.deleteTodoList = async (req: Request, res: Response, next: NextFunction) => {
 //     const id = +req.params.id;
