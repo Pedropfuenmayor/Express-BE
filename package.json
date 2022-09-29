@@ -8,7 +8,7 @@
     "format:write": "prettier --write .",
     "lint:check": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest",
+    "test": "jest --watch",
     "start": "nodemon ./src/server.ts"
   },
   "repository": {

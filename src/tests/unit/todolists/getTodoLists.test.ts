@@ -1,7 +1,7 @@
 import { getTodoLists } from '../../../controllers/todoLists';
 import { NextFunction } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
-import todoList from '../../mock-data/new-todolist.json';
+import todoList from '../../mock-data/new-todolist';
 import { prismaMock } from '../../utils/singleton';
 
 let req: MockRequest<any>, res: MockResponse<any>, next: NextFunction;

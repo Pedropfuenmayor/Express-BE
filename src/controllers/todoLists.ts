@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { NextFunction, Request, Response } from 'express';
 import { Todolist } from '../models';
 
@@ -65,33 +66,12 @@ export const putTodoList = async (req: Request, res: Response, next: NextFunctio
 
     const { name } = req.body;
 
-
     try {
         // validate todo list name is not empty
         if (req.errorFields.length > 0) {
             const error = new Error();
             error.fields = req.errorFields;
             error.statusCode = 400;
-            throw error;
-        }
-
-        //fetch todo list
-        const todolist = await req.prisma.todolists.findUnique({
-            where: {
-                id,
-            },
-        });
-
-        //validate todo list exist
-        if (!todolist) {
-            const validationError = [{ message: 'Todo list not found', field: 'id', value: id }];
-
-            let error = new Error();
-
-            error.fields = validationError;
-
-            error.statusCode = 404;
-
             throw error;
         }
 
@@ -104,41 +84,38 @@ export const putTodoList = async (req: Request, res: Response, next: NextFunctio
         });
         return res.status(200).json(updatedtodolist);
     } catch (error) {
+        if(error instanceof PrismaClientKnownRequestError && error.code === 'P2025'){
+            const validationError = [{ message:'Todo list not found', field: 'id', value: id }];
+            
+            error.fields = validationError;
+
+            error.statusCode = 404;
+         }
         next(error);
     }
 };
 
-// exports.deleteTodoList = async (req: Request, res: Response, next: NextFunction) => {
-//     const id = +req.params.id;
+export const deleteTodoList = async (req: Request, res: Response, next: NextFunction) => {
+    const id = +req.params.id;
 
-//     let errors = { fields: [] };
+    try {
+        //fetch todo list
+        await req.prisma.todolists.delete({
+            where: {
+                id,
+            },
+        });
 
-//     try {
-//         //fetch todo list
-//         const todolist = await req.prisma.todolists.findUnique({
-//             where: {
-//                 id,
-//             },
-//         });
-//         //validate todo list exist
-//         if (!todolist) {
-//             errors.fields.push({ field: 'id', value: id });
+        return res.status(204).json()
 
-//             let error = new Error();
+    } catch (error) {
+         if(error instanceof PrismaClientKnownRequestError && error.code === 'P2025'){
+            const validationError = [{ message:'Todo list not found', field: 'id', value: id }];
+            
+            error.fields = validationError;
 
-//             error.statusCode = 404;
-
-//             throw error;
-//         }
-//         await req.prisma.todolists.delete({
-//             where: {
-//                 id,
-//             },
-//         });
-
-//         return res.status(204).json();
-//     } catch (error) {
-//         console.log(error);
-//         res.status(error.statusCode || 500).json(errors);
-//     }
-// };
+            error.statusCode = 404;
+         }
+        next(error);
+    }
+};

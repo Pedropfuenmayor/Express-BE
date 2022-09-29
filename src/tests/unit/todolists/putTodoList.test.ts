@@ -1,7 +1,7 @@
 import { putTodoList } from '../../../controllers/todoLists';
 import { NextFunction } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
-import todoList from '../../mock-data/new-todolist.json';
+import todoList from '../../mock-data/new-todolist';
 import { prismaMock } from '../../utils/singleton';
 
 let req: MockRequest<any>, res: MockResponse<any>, next: NextFunction;
@@ -20,17 +20,8 @@ describe('PUT Todo List', () => {
         req.errorFields = [];
     });
 
-    test('should call req.prisma.todolists.findUnique', async () => {
-        await putTodoList(req, res, next);
-        expect(req.prisma.todolists.findUnique).toBeCalledWith({
-            where: {
-                id: req.params.id,
-            },
-        });
-    });
 
     test('should call req.prisma.todolists.update', async () => {
-        req.prisma.todolists.findUnique.mockReturnValue(todoList);
         await putTodoList(req, res, next);
         expect(req.prisma.todolists.update).toBeCalledWith({
             where: {
@@ -48,7 +39,6 @@ describe('PUT Todo List', () => {
         });
 
         test('should return json body in response', async () => {
-            req.prisma.todolists.findUnique.mockReturnValue(todoList);
             req.prisma.todolists.update.mockReturnValue(todoList);
             await putTodoList(req, res, next);
             expect(res._getJSONData()).toStrictEqual(todoList);
@@ -60,24 +50,8 @@ describe('PUT Todo List', () => {
             expect(next).toBeCalled();
         });
 
-        test('should handle error whe doesnt exist', async () => {
-            req.prisma.todolists.findUnique.mockReturnValue(null);
-            await putTodoList(req, res, next);
-            expect(next).toBeCalled();
-        });
-
-
-        test('should handle database call error: find method', async () => {
-            const errorMessage = { message: 'Todo list not found' };
-            const rejectPromise = Promise.reject(errorMessage);
-            req.prisma.todolists.findUnique.mockReturnValue(rejectPromise);
-            await putTodoList(req, res, next);
-            expect(next).toBeCalledWith(errorMessage);
-        });
-
 
         test('should handle database call error: update method', async () => {
-            req.prisma.todolists.findUnique.mockReturnValue(todoList);
             const errorMessage = { message: 'Todo list not found' };
             const rejectPromise = Promise.reject(errorMessage);
             req.prisma.todolists.update.mockReturnValue(rejectPromise);
@@ -85,3 +59,4 @@ describe('PUT Todo List', () => {
             expect(next).toBeCalledWith(errorMessage);
         });
 });
+

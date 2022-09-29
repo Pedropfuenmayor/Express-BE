@@ -1,7 +1,6 @@
 import { postTodoList } from '../../../controllers/todoLists';
 import { NextFunction } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
-import newTodoList from '../../mock-data/new-todolist.json';
 import { prismaMock } from '../../utils/singleton';
 
 let req: MockRequest<any>, res: MockResponse<any>, next: NextFunction;
@@ -15,13 +14,13 @@ beforeEach(() => {
 describe('POST Todo List', () => {
     beforeEach(() => {
         req.prisma = prismaMock;
-        req.body = newTodoList;
+        req.body = {name: "Hause Task"};
         req.errorFields = []
     });
 
     test('should call req.prisma.todolists.create', async () => {
         await postTodoList(req, res, next);
-        expect(req.prisma.todolists.create).toBeCalledWith({ data: newTodoList });
+        expect(req.prisma.todolists.create).toBeCalledWith({ data: req.body });
     });
 
     test('should return 201 response code', async () => {
@@ -30,9 +29,9 @@ describe('POST Todo List', () => {
     });
 
     test('should return json body in response', async () => {
-        req.prisma.todolists.create.mockReturnValue(newTodoList);
+        req.prisma.todolists.create.mockReturnValue(req.body);
         await postTodoList(req, res, next);
-        expect(res._getJSONData()).toStrictEqual(newTodoList);
+        expect(res._getJSONData()).toStrictEqual(req.body);
     });
 
     test('should handle error when name there are errors in the req.errorFields', async () => {
