@@ -8,6 +8,8 @@ import { NextFunction, Request, Response } from 'express';
 import prisma from './prisma/client';
 import { ErrorFields } from './models';
 import { PrismaClient } from '@prisma/client';
+import passport from 'passport'
+import session from 'express-session'
 
 declare global {
     namespace Express {
@@ -30,6 +32,13 @@ app.use(express.json());
 
 //Allow Cross-Origin Resource Sharing
 app.use(cors());
+app.use(session({
+    secret: 'supersecret',
+    resave: false,
+    saveUninitialized: false
+  }))
+  app.use(passport.initialize())
+  app.use(passport.session())
 
 //Give access to Prisma through the request object
 app.use((req: Request, res: Response, next: NextFunction) => {

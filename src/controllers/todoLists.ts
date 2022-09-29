@@ -27,6 +27,19 @@ export const postTodoList = async (req: Request, res: Response, next: NextFuncti
 export const getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
     
     try {
+        if (!req.isAuthenticated()) {
+            const validationError = [{ message: 'User not authenticated', field: 'userid', value: '' }];
+    
+            let error = new Error();
+    
+            error.fields = validationError;
+    
+            error.statusCode = 404;
+    
+            throw error;
+        }
+
+
         let userid 
         let todolist;
         if(req.query.userid){

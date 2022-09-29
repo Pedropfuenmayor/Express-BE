@@ -2,8 +2,11 @@ import express from 'express';
 const router = express.Router();
 import { getTodoLists, getTodoListById, postTodoList, putTodoList, deleteTodoList} from '../controllers/todoLists';
 import { validateTodolistBody } from '../controllers/validation';
+import{ensureLoggedIn} from 'connect-ensure-login'
 
-router.get('/todolists/', getTodoLists);
+const ensureLogIn = ensureLoggedIn();
+
+router.get('/todolists/' ,getTodoLists);
 
 router.get('/todolists/:id', getTodoListById);
 
