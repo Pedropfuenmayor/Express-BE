@@ -24,8 +24,10 @@ model todos {
 }
 
 model users {
-  id        Int         @id @default(autoincrement())
-  email     String      @db.VarChar(300)
-  password  String      @db.VarChar(300)
-  todolists todolists[]
+  id         Int         @id @default(autoincrement())
+  email      String      @unique(map: "email_uniq") @db.VarChar(300)
+  password   String      @db.VarChar(300)
+  created_at DateTime    @db.Timestamp(6)
+  salt       String      @db.VarChar(300)
+  todolists  todolists[]
 }

@@ -10,11 +10,12 @@ export const postTodoList = async (req: Request, res: Response, next: NextFuncti
             error.statusCode = 400;
             throw error;
         }
-        const { name }: Todolist = req.body;
+        const { name, userid }: Todolist = req.body;
         //create todo list
         const todolist = await req.prisma.todolists.create({
             data: {
                 name,
+                userid
             },
         });
         return res.status(201).json(todolist);
@@ -24,9 +25,27 @@ export const postTodoList = async (req: Request, res: Response, next: NextFuncti
 };
 
 export const getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
+    
     try {
+        let userid 
+        let todolist;
+        if(req.query.userid){
+            userid = +req.query.userid
+            todolist = await req.prisma.todolists.findMany({where:{
+                userid
+            }});
+        }else{
+            const validationError = [{ message: 'User id required', field: 'userid', value: req.query.userid }];
+
+            let error = new Error();
+
+            error.fields = validationError;
+
+            error.statusCode = 404;
+
+            throw error;
+        }
         //fetch todo lists
-        const todolist = await req.prisma.todolists.findMany();
         return res.status(200).json(todolist);
     } catch (error) {
         next(error);

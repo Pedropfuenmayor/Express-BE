@@ -16,11 +16,16 @@ beforeEach(() => {
 describe('GET Todo Lists', () => {
     beforeEach(() => {
         req.prisma = prismaMock;
+        req.query.userid = 100
     });
 
     test('should call req.prisma.todolists.findMany', async()=>{
         await getTodoLists(req, res, next)
-        expect(req.prisma.todolists.findMany).toBeCalled()
+        expect(req.prisma.todolists.findMany).toBeCalledWith({
+            where: {
+                userid: req.query.userid,
+            },
+        });
     })
 
     test('should return 200 response code', async () => {

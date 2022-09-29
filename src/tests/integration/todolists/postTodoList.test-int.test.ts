@@ -3,13 +3,17 @@ import request from 'supertest';
 import app from '../../../app';
 import newTodolist from '../../mock-data/new-todolist';
 import prisma from '../../../prisma/client';
+import newUser from '../../mock-data/new-user';
 
 const endpointUrl = '/todolists';
 
-describe('create a todolist', () => {
+describe('POST todo lists', () => {
+    beforeAll(async () => {
+        await prisma.users.create({ data: newUser });
+    });
     let id:number;
     test('POST todo lists', async () => {
-        const response = await request(app).post(endpointUrl).send(newTodolist);
+        const response = await request(app).post(endpointUrl).send({ ...newTodolist, userid: newUser.id });
         id = response.body.id
         expect(response.statusCode).toBe(201);
         expect(response.body.name).toBe(newTodolist.name);
@@ -22,12 +26,18 @@ describe('create a todolist', () => {
 
 
     afterAll(async () => {
-        const deleteUser = prisma.todolists.delete({
+        const deleteTodolist = prisma.todolists.delete({
             where: {
-                id,
+                id
             },
         });
-        await prisma.$transaction([deleteUser]);
+        const deleteUser = prisma.users.delete({
+            where: {
+                id: newUser.id,
+            },
+        });
+        
+        await prisma.$transaction([deleteTodolist, deleteUser]);
         await prisma.$disconnect();
     });
 });

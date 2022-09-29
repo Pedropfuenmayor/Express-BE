@@ -1,8 +1,8 @@
 import express from 'express';
 const app = express();
-const todoListsRoutes = require('./routes/todoLists');
+import todoListsRoutes from './routes/todoLists';
 // const todosRoutes = require('./routes/todos');
-// const userRoutes = require('./routes/user');
+import userRoutes from './routes/user';
 import cors from 'cors';
 import { NextFunction, Request, Response } from 'express';
 import prisma from './prisma/client';
@@ -42,7 +42,7 @@ app.use(todoListsRoutes);
 
 // app.use(todosRoutes);
 
-// app.use(userRoutes);
+app.use(userRoutes);
 
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     // console.log(error);

@@ -1,7 +1,7 @@
 import { validateTodolistBody } from '../../../controllers/validation';
 import { NextFunction } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
-import newTodoList from '../../mock-data/new-todolist.json';
+import newTodoList from '../../mock-data/new-todolist';
 
 let req: MockRequest<any>, res: MockResponse<any>, next: NextFunction;
 
