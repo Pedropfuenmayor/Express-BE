@@ -9,7 +9,7 @@
     "lint:check": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "jest --watch",
-     "generate": "prisma generate",
+     "generate": "prisma generate --schema=./src/prisma/schema.prisma",
     "start": "npm run generate & nodemon ./src/server.ts"
   },
   "repository": {
