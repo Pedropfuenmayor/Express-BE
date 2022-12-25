@@ -26,43 +26,43 @@ export const postTodoList = async (req: Request, res: Response, next: NextFuncti
 
 export const getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
      return res.status(200).json({message:"Hello from the browser"});
-    try {
-        if (!req.isAuthenticated()) {
-            const validationError = [{ message: 'User not authenticated', field: 'userid', value: '' }];
+    // try {
+    //     if (!req.isAuthenticated()) {
+    //         const validationError = [{ message: 'User not authenticated', field: 'userid', value: '' }];
     
-            let error = new Error();
+    //         let error = new Error();
     
-            error.fields = validationError;
+    //         error.fields = validationError;
     
-            error.statusCode = 404;
+    //         error.statusCode = 404;
     
-            throw error;
-        }
+    //         throw error;
+    //     }
 
 
-        let userid 
-        let todolist;
-        if(req.query.userid){
-            userid = +req.query.userid
-            todolist = await req.prisma.todolists.findMany({where:{
-                userid
-            }});
-        }else{
-            const validationError = [{ message: 'User id required', field: 'userid', value: req.query.userid }];
+    //     let userid 
+    //     let todolist;
+    //     if(req.query.userid){
+    //         userid = +req.query.userid
+    //         todolist = await req.prisma.todolists.findMany({where:{
+    //             userid
+    //         }});
+    //     }else{
+    //         const validationError = [{ message: 'User id required', field: 'userid', value: req.query.userid }];
 
-            let error = new Error();
+    //         let error = new Error();
 
-            error.fields = validationError;
+    //         error.fields = validationError;
 
-            error.statusCode = 404;
+    //         error.statusCode = 404;
 
-            throw error;
-        }
-        //fetch todo lists
-        return res.status(200).json(todolist);
-    } catch (error) {
-        next(error);
-    }
+    //         throw error;
+    //     }
+    //     //fetch todo lists
+    //     return res.status(200).json(todolist);
+    // } catch (error) {
+    //     next(error);
+    // }
 };
 
 export const getTodoListById = async (req: Request, res: Response, next: NextFunction) => {
