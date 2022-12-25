@@ -9,7 +9,8 @@
     "lint:check": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "jest --watch",
-    "start": "nodemon ./src/server.ts"
+     "generate": "prisma generate",
+    "start": "npm run generate & nodemon ./src/server.ts"
   },
   "repository": {
     "type": "git",
