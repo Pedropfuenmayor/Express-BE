@@ -25,7 +25,7 @@ export const postTodoList = async (req: Request, res: Response, next: NextFuncti
 };
 
 export const getTodoLists = async (req: Request, res: Response, next: NextFunction) => {
-     return res.status(200).json({message:"Hello from the browser"});
+     return res.status(200).json({message:"Hello from the server"});
     // try {
     //     if (!req.isAuthenticated()) {
     //         const validationError = [{ message: 'User not authenticated', field: 'userid', value: '' }];
